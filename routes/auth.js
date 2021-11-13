@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
 const privateKey = `
-
 `;
 
 router.use(function (req, res, next) {
@@ -19,27 +19,32 @@ router.use(function (req, res, next) {
 
 router.post('/login', async function (req, res, next) {
   if (req.body.username && req.body.password) {
-    return await bcrypt
-      .compare(req.body.password, "$2b$10$IHrcsd54rxr7RZpg7rGMbOMw5woOsiYhCTmXhCbeItxylVroJ878i")
-      .then(result => {
-        if (result === true) {
-          const token = jwt.sign({ id: "pretend_user_id" }, privateKey, { algorithm: 'RS256' });
-          return res.json({ "access_token": token })
-        } else {
-          return res.status(401).send("Incorrect password")
-        }
-      }).catch(error => {
-        return res.status(500).json({ "error": error.message })
-      });
+    retrieveUser(req, res)
   } else {
-    res.status(400).json({ "error": "Missing username or password" })
+    res.status(400).json({ "error": "Missing username or password" });
   }
 });
+
+async function retrieveUser(req, res) {
+  const user = await User.findOne().where('username').equals(req.body.username).exec();
+  if (user) {
+    return await bcrypt.compare(req.body.password, user.password).then(result => {
+      if (result === true) {
+        const token = jwt.sign({ id: user._id }, privateKey, { algorithm: 'RS256' });
+        return res.json({ "access_token": token })
+      } else {
+        return res.status(401).send("Invalid credentials")
+      }
+    }).catch(error => {
+      return res.status(500).json({ "error": "Error signing in user" })
+    });
+  }
+}
 
 router.post('/register', function (req, res, next) {
   if (req.body.username && req.body.password && req.body.passwordRepeat) {
     if (req.body.password === req.body.passwordRepeat) {
-      res.json({ "password": req.body.password, "hashedPassword": req.hashedPassword })
+      saveNewUser(req, res);
     } else {
       res.status(400).json({ "error": "Passwords do not match" })
     }
@@ -47,5 +52,22 @@ router.post('/register', function (req, res, next) {
     res.status(400).json({ "error": "Missing username or password" })
   }
 });
+
+async function saveNewUser(req, res) {
+  const user = new User({
+    "username": req.body.username,
+    "password": req.hashedPassword
+  })
+
+  user.save()
+    .then(savedUser => {
+      return res.status(201).json({
+        "id": savedUser._id,
+        "username": savedUser.username
+      })
+    }).catch(error => {
+      return res.status(500).json({ "error": "Error adding new user" })
+    })
+}
 
 module.exports = router;
