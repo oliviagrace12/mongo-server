@@ -28,16 +28,17 @@ router.post('/login', async function (req, res, next) {
 async function retrieveUser(req, res) {
   const user = await User.findOne().where('username').equals(req.body.username).exec();
   if (user) {
-    return await bcrypt.compare(req.body.password, user.password).then(result => {
-      if (result === true) {
-        const token = jwt.sign({ id: user._id }, privateKey, { algorithm: 'RS256' });
-        return res.json({ "access_token": token })
-      } else {
-        return res.status(401).send("Invalid credentials")
-      }
-    }).catch(error => {
-      return res.status(500).json({ "error": "Error signing in user" })
-    });
+    return await bcrypt.compare(req.body.password, user.password)
+      .then(result => {
+        if (result === true) {
+          const token = jwt.sign({ id: user._id }, privateKey, { algorithm: 'RS256' });
+          return res.json({ "access_token": token })
+        } else {
+          return res.status(401).send("Invalid credentials")
+        }
+      }).catch(error => {
+        return res.status(500).json({ "error": "User login failed" })
+      });
   }
 }
 
@@ -66,7 +67,7 @@ async function saveNewUser(req, res) {
         "username": savedUser.username
       })
     }).catch(error => {
-      return res.status(500).json({ "error": "Error adding new user" })
+      return res.status(500).json({ "error": "User registration failed" })
     })
 }
 
