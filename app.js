@@ -2,7 +2,7 @@ var express = require('express');
 var path = require('path');
 var logger = require('morgan');
 
-// import and invoke the function
+// import and invoke the function   
 require('./models/setupMongo')();
 
 var itemRouter = require('./routes/item');
@@ -15,5 +15,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/auth', authRouter);
+app.use('/item', itemRouter);
 
 module.exports = app;

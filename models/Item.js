@@ -8,7 +8,7 @@ const ItemSchema = new Schema(
         "createdTime": { type: Date, required: true },
         "complete": { type: Boolean, default: false },
         "completedTime": { type: Date },
-        "user": { type: Schema.Types.ObjectId, ref: 'User' }
+        "user": { type: Schema.Types.ObjectId, ref: 'User', required: true }
     }
 )
 
