@@ -1,3 +1,4 @@
 /bin/
 /node_modules/
 models/setupMongo.js
+util/privateKey.js

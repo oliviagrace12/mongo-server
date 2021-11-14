@@ -4,7 +4,6 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-
 const privateKey = `
 `;
 
@@ -34,11 +33,13 @@ async function retrieveUser(req, res) {
           const token = jwt.sign({ id: user._id }, privateKey, { algorithm: 'RS256' });
           return res.json({ "access_token": token })
         } else {
-          return res.status(401).send("Invalid credentials")
+          return res.status(401).json({ "error": "Invalid credentials" })
         }
       }).catch(error => {
         return res.status(500).json({ "error": "User login failed" })
       });
+  } else {
+    return res.status(500).json({ "error": "Invalid credentials" })
   }
 }
 
