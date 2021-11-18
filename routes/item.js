@@ -24,7 +24,7 @@ router.get('/get', async function (req, res, next) {
 });
 
 router.delete('/delete/:itemId', async function (req, res, next) {
-    await Item.remove().where('_id').equals(req.params.itemId)
+    await Item.deleteOne().where('_id').equals(req.params.itemId)
     return res.json(req.params.itemId)
 });
 
