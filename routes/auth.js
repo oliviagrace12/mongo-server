@@ -5,8 +5,7 @@ const saltRounds = 10;
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-const privateKey = `
-`;
+const privateKey = process.env.JWT_PRIVATE_KEY;
 
 router.use(function (req, res, next) {
   bcrypt.genSalt(saltRounds, function (err, salt) {
@@ -37,7 +36,7 @@ async function retrieveUser(req, res) {
           return res.status(401).json({ "error": "Invalid credentials" })
         }
       }).catch(error => {
-        return res.status(500).json({ "error": "User login failed" })
+        return res.status(500).json({ "error": "Invalid credentials" })
       });
   } else {
     return res.status(500).json({ "error": "Invalid credentials" })
@@ -56,7 +55,7 @@ router.post('/register', function (req, res, next) {
   }
 });
 
-async function saveNewUser(req, res) {
+function saveNewUser(req, res) {
   const user = new User({
     "username": req.body.username,
     "password": req.hashedPassword

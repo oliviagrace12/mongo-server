@@ -1,4 +1,6 @@
 /bin/
 /node_modules/
-models/setupMongo.js
 util/privateKey.js
+.env
+.env.test
+.env.production

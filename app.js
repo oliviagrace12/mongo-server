@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 var logger = require('morgan');
 
+require('dotenv').config();
 // import and invoke the function   
 require('./models/setupMongo')();
 
