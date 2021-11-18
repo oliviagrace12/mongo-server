@@ -28,6 +28,16 @@ router.delete('/delete/:itemId', async function (req, res, next) {
     return res.json(req.params.itemId)
 });
 
+router.patch('/complete/:itemId', async function (req, res, next) {
+    await Item.updateOne().where('_id').equals(req.params.itemId)
+        .set('complete', req.body.complete)
+        .set('completedTime', req.body.completedTime).exec();
+
+    const updated = await Item.findOne().where('_id').equals(req.params.itemId).exec();
+
+    return res.json(updated);
+});
+
 router.post('/create', function (req, res, next) {
     const item = new Item({
         "title": req.body.title,
