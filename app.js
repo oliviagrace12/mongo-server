@@ -6,8 +6,9 @@ require('dotenv').config();
 // import and invoke the function   
 require('./models/setupMongo')();
 
-var itemRouter = require('./routes/item');
 var authRouter = require('./routes/auth');
+var itemRouter = require('./routes/item');
+var themeRouter = require('./routes/theme');
 
 var app = express();
 
@@ -17,5 +18,6 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/auth', authRouter);
 app.use('/item', itemRouter);
+app.use('/theme', themeRouter);
 
 module.exports = app;
